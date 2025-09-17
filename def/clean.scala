@@ -1,4 +1,7 @@
 // Dropping Nulls
+//
+// Useful when incomplete rows add no value.
+// Be careful — you might throw away useful partial data.
 
 // Drop rows with *any* null value
 val cleaned = df.na.drop()
@@ -7,6 +10,8 @@ val cleaned = df.na.drop()
 val cleanedSubset = df.na.drop(Seq("id", "amount"))
 
 // Filling Nulls with Defaults
+//
+// Useful for categorical fields or missing numbers.
 
 val filled = df.na.fill(Map(
   "amount" -> 0,              // numeric default
@@ -37,6 +42,8 @@ val standardized = df
   .withColumn("phone_clean", regexp_replace($"phone", "[^0-9]", ""))
 
 // Handling Outliers
+//
+// Helps prevent skewed averages or exploding metrics.
 
 val filtered = df.filter($"amount".between(0, 10000))
 

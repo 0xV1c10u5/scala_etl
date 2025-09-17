@@ -17,9 +17,8 @@ val enriched = df
 val reduced = enriched.drop("raw_column")
 
 // Filtering and Conditional Logic
-//
-// Simple Filter
 
+// Simple Filter
 val adults = df.filter($"age" > 21)
 
 // SQL Style Conditions
@@ -46,13 +45,11 @@ val summary = df
   )
 
 // Sorting and Window Functions
-//
-// Sorting
 
+// Sorting
 val sorted = df.orderBy($"amount".desc)
 
 // Window
-
 import org.apache.spark.sql.expressions.Window
 
 val windowSpec = Window.partitionBy("category").orderBy($"amount".desc)
@@ -60,18 +57,18 @@ val windowSpec = Window.partitionBy("category").orderBy($"amount".desc)
 val ranked = df.withColumn("rank", row_number().over(windowSpec))
 
 // Joins
+//
+// Supported join types: inner, left, right, outer, semi, anti.
 
 val joined = df1.join(df2, Seq("id"), "inner")
 
 // Flattening Nested Structures
 
 // JSON Nested Structures
-
 val flattened = df
   .select($"id", $"details.address.city", $"details.phone")
 
 // Arrays
-
 val exploded = df.withColumn("item", explode($"items"))
 
 

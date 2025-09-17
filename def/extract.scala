@@ -1,4 +1,7 @@
 // Read CSV
+// 
+// Useful for semi-structured data dumps.
+// Watch out: inferring schema can be slow for large files; prefer explicit schemas.
 
 val csvDF = spark.read
   .format("csv") // or simply .csv()
@@ -8,11 +11,17 @@ val csvDF = spark.read
   .load("s3://bucket/path/data.csv")
 
 // Read Parquet
+//
+// Best for ETL (columnar, compressed, schema included).
+// Reading Parquet is far more efficient than CSV/JSON.
 
 val parquetDF = spark.read
   .parquet("s3://bucket/path/data.parquet")
 
 // Read JSON
+//
+// Great for hierarchical or API-style data.
+// If deeply nested, may need explode() or from_json() to flatten.
 
 val jsonDF = spark.read
   .option("multiLine", "true")   // for pretty-printed JSON
@@ -43,6 +52,9 @@ val df = spark.read
   .csv("s3://bucket/path/data.csv")
 
 // Read from DB
+//
+// Useful for structured OLTP → ETL ingestion.
+// Use partitioning for parallel reads on large tables:
 
 val jdbcDF = spark.read
   .format("jdbc")
@@ -58,6 +70,9 @@ val jdbcDF = spark.read
   .option("numPartitions", "10")
 
 // Read from Stream
+//
+// For real-time ETL pipelines.
+// Requires defining schema after parsing the Kafka message.
 
 // Kafka Example
 val kafkaDF = spark.readStream

@@ -23,3 +23,31 @@ Scala is exceptionally good at distributed ETL.  Aside from this use case, curre
 - Track cleaning decisions (audit trail, logging).
 - For large datasets: prefer fill over drop (retains more data).
 - Outlier handling should be domain-driven (don’t just clip blindly).
+
+### Load
+- Use Parquet/ORC/Avro for analytics, CSV/JSON only for interoperability.
+- Always define write mode explicitly (overwrite, append, etc.).
+- For partitioned data lakes, pick natural partitions (date/hour).
+- For JDBC, avoid single-thread writes → partition + batch inserts.
+- For streaming, checkpoint frequently for recovery.
+
+### UDFs (User Defined Functions)
+Sometimes built-in Spark functions (lower, trim, date_add, etc.) aren’t enough. That’s where UDFs come in: custom logic you can plug into DataFrame transformations.
+- Use UDFs only as a last resort when Spark doesn’t have a built-in function.
+- Keep UDF logic simple and deterministic.
+- Always handle null inputs safely.
+- Reuse registered UDFs across SQL/DataFrame queries.
+#### Performance Considerations
+- UDFs break Spark’s optimization (Catalyst can’t optimize them).
+- Prefer built-in functions (regexp_replace, split, substring, when) when possible.
+- For heavy usage, consider Spark SQL functions in Scala (functions API) instead of UDFs.
+- If you need high performance, use Spark SQL native functions or pandas UDFs (PySpark side). In Scala, explore Dataset map/flatMap for efficiency.
+
+### Joins
+- Always filter early before joining → reduces shuffle size.
+- Use broadcast joins when one dataset is < ~500 MB.
+- When possible, repartition both DataFrames on the join key:
+> val df1Part = df1.repartition($"id")
+> val df2Part = df2.repartition($"id")
+- Be explicit with column selection to avoid ambiguous schemas.
+- Monitor join performance in Spark UI (look for shuffles).
